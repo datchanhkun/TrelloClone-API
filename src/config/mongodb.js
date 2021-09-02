@@ -1,6 +1,9 @@
 import { MongoClient } from 'mongodb'
 import { env } from '*/config/environment'
 
+let dbInstance = null
+
+
 //Connection URL
 const uri = env.MONGODB_URI
 
@@ -9,24 +12,24 @@ export const connectDB = async () => {
     useUnifiedTopology: true,
     useNewUrlParser: true
   })
+  //Connect the client to the server
+  await client.connect()
 
-  try {
-    //Connect the client to the server
-    await client.connect()
-    console.log('Connected Successfully to server!')
-
-    //List databases
-    await listDatabases(client)
-  } finally {
-    // Đảm bảo client sẽ đóng connect khi kết thúc hoặc gặp lỗi
-    await client.close()
-  }
+  //Gán clientDB cho dbInstance
+  dbInstance = client.db(env.DATABASE_NAME)
 }
 
-const listDatabases = async (client) => {
-  const databasesList = await client.db().admin().listDatabases()
-  console.log(databasesList)
-  console.log('Your Databases List: ')
-  databasesList.databases.forEach(db => console.log(` - ${db.name}`))
+//Get Database Instance
+export const getDB = () => {
+  //Khi dbInstance chưa kết nối được thì throw error message
+  if (!dbInstance) throw new Error('Must connect to Database first!')
+  return dbInstance
 }
-//fixing git
+
+// const listDatabases = async (client) => {
+//   const databasesList = await client.db().admin().listDatabases()
+//   console.log(databasesList)
+//   console.log('Your Databases List: ')
+//   databasesList.databases.forEach(db => console.log(` - ${db.name}`))
+// }
+
