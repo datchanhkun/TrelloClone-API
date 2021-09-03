@@ -1,10 +1,12 @@
 import Joi from 'joi'
 import { getDB } from '*/config/mongodb'
+import { ObjectId } from 'mongodb'
+
 //Định nghĩa 'card' collection
 const cardCollectionName = 'cards'
 const cardCollectionSchema = Joi.object({
-  boardId: Joi.string().required(),
-  columnId: Joi.string().required(),
+  boardId: Joi.string().required(), //Mặc định là string -> ObjectId để truy vấn
+  columnId: Joi.string().required(), //Mặc định là string -> ObjectId để truy vấn
   title: Joi.string().required().min(3).max(30).trim(),
   cover: Joi.string().default(null),
   createdAt: Joi.date().timestamp().default(Date.now()),
@@ -20,9 +22,15 @@ const validateSchema = async (data) => {
 const createNew = async (data) => {
   try {
     //data đã được validate
-    const value = await validateSchema(data)
+    const valueValidate = await validateSchema(data)
+    //Clone lại value và ghi đè id từ string -> ObjectId
+    const valueInsert = {
+      ...valueValidate,
+      boardId: ObjectId(valueValidate.boardId),
+      columnId: ObjectId(valueValidate.columnId)
+    }
     //Await đến hàm GetDB rồi insert cái value đã validate vào
-    const result = await getDB().collection(cardCollectionName).insertOne(value)
+    const result = await getDB().collection(cardCollectionName).insertOne(valueInsert)
     return await getDB().collection(cardCollectionName).findOne(result.insertedId)
   } catch (error) {
     throw new Error(error)
