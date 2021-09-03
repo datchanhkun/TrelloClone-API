@@ -1,9 +1,14 @@
 import { ColumnModel } from '*/models/column.model'
-
+import { BoardModel } from '*/models/board.model'
 const createNew = async (data) => {
   try {
-    const result = await ColumnModel.createNew(data)
-    return result
+    const newColumn = await ColumnModel.createNew(data)
+
+    //update columnOrder Array in board Collection
+    const boardId = newColumn.boardId.toString()
+    const newColumnId = newColumn._id.toString()
+    await BoardModel.pushColumnOrder(boardId, newColumnId)
+    return newColumn
   } catch (error) {
     throw new Error(error)
   }
