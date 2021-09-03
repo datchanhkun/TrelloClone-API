@@ -1,10 +1,11 @@
 import Joi from 'joi'
+import { ObjectId } from 'mongodb'
 import { getDB } from '*/config/mongodb'
 //Định nghĩa 'column' collection
 const columnCollectionName = 'columns'
 const columnCollectionSchema = Joi.object({
   boardId: Joi.string().required(),
-  title: Joi.string().required().min(3).max(20),
+  title: Joi.string().required().min(3).max(20).trim(),
   cardOrder: Joi.array().items(Joi.string()).default([]),
   createdAt: Joi.date().timestamp().default(Date.now()),
   updatedAt: Joi.date().timestamp().default(null),
@@ -24,10 +25,26 @@ const createNew = async (data) => {
     const result = await getDB().collection(columnCollectionName).insertOne(value)
     return await getDB().collection(columnCollectionName).findOne(result.insertedId)
   } catch (error) {
-    console.log(error)
+    throw new Error(error)
+  }
+}
+
+const update = async (id, data) => {
+  try {
+    //Await đến hàm GetDB rồi insert cái value đã validate vào
+    const result = await getDB().collection(columnCollectionName).findOneAndUpdate(
+      { _id: ObjectId(id) }, //tìm đến id của column cần update
+      { $set: data }, //data update từ service truyền qua
+      { returnDocument: 'after' } //trả về bản ghi đã update, true -> bản ghi chưa update
+    )
+    console.log(result)
+    return result.value
+  } catch (error) {
+    throw new Error(error)
   }
 }
 
 export const ColumnModel = {
-  createNew
+  createNew,
+  update
 }
