@@ -23,7 +23,7 @@ const createNew = async (data) => {
     const result = await getDB().collection(boardCollectionName).insertOne(value)
     return await getDB().collection(boardCollectionName).findOne(result.insertedId)
   } catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 }
 
