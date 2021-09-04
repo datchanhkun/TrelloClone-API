@@ -1,8 +1,9 @@
 import express from 'express'
+import cors from 'cors'
 import { connectDB } from '*/config/mongodb'
 import { env } from '*/config/environment'
 import { apiV1 } from '*/routes/v1'
-
+import { corsOptions } from '*/config/cors'
 //Connect DB
 connectDB()
   .then(() => console.log('Connected to MongoDB Server Successfully!'))
@@ -15,6 +16,7 @@ connectDB()
 const bootServer = () => {
   const app = express()
 
+  app.use(cors(corsOptions))
   //Enable req.body data
   app.use(express.json())
 
