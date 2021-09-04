@@ -54,10 +54,15 @@ const pushCardOrder = async (columnId, cardId) => {
 
 const update = async (id, data) => {
   try {
+    //Ghi đè id từ string thành objectID
+    const updateData = {
+      ...data,
+      boardId: ObjectId(data.boardId)
+    }
     //Await đến hàm GetDB rồi insert cái value đã validate vào
     const result = await getDB().collection(columnCollectionName).findOneAndUpdate(
       { _id: ObjectId(id) }, //tìm đến id của column cần update
-      { $set: data }, //data update từ service truyền qua
+      { $set: updateData }, //data update từ service truyền qua
       { returnDocument: 'after' } //trả về bản ghi đã update, true -> bản ghi chưa update
     )
     return result.value
