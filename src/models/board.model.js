@@ -50,8 +50,11 @@ const getFullBoard = async (boardId) => {
     //Await đến hàm GetDB rồi insert cái value đã validate vào
     const result = await getDB().collection(boardCollectionName).aggregate([
       {
-        //So sánh _id trong db với id truyền vào
-        $match: { _id: ObjectId(boardId) }
+        //So sánh _id trong db với id truyền vào, lọc _destroy: false->lookup
+        $match: {
+          _id: ObjectId(boardId),
+          _destroy: false
+        }
       },
       {
         //left join data từ collection columns
