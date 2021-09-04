@@ -37,6 +37,30 @@ const createNew = async (data) => {
   }
 }
 
+const update = async (id, data) => {
+  try {
+    //Ghi đè id từ string thành objectID
+    const updateData = { ...data }
+    //Kiểm tra nếu data đẩy lên server có tồn tại boardId thì convert boardId từ string -> objectID
+    if (data.boardId) {
+      updateData.boardId = ObjectId(data.boardId)
+    }
+    //Kiểm tra nếu data đẩy lên server có tồn tại columnId thì convert columnId từ string -> objectID
+    if (data.columnId) {
+      updateData.columnId = ObjectId(data.columnId)
+    }
+    //Await đến hàm GetDB rồi insert cái value đã validate vào
+    const result = await getDB().collection(cardCollectionName).findOneAndUpdate(
+      { _id: ObjectId(id) }, //tìm đến id của column cần update
+      { $set: updateData }, //data update từ service truyền qua
+      { returnDocument: 'after' } //trả về bản ghi đã update, true -> bản ghi chưa update
+    )
+    return result.value
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 /**
  *
  * @param {Array of string card id} ids
@@ -58,5 +82,6 @@ const deleteMany = async (ids) => {
 
 export const CardModel = {
   createNew,
+  update,
   deleteMany
 }

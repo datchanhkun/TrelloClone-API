@@ -54,10 +54,10 @@ const pushCardOrder = async (columnId, cardId) => {
 
 const update = async (id, data) => {
   try {
-    //Ghi đè id từ string thành objectID
-    const updateData = {
-      ...data,
-      boardId: ObjectId(data.boardId)
+    const updateData = { ...data }
+    //Kiểm tra nếu data đẩy lên server có tồn tại boardId thì convert boardId từ string -> objectID
+    if (data.boardId) {
+      updateData.boardId = ObjectId(data.boardId)
     }
     //Await đến hàm GetDB rồi insert cái value đã validate vào
     const result = await getDB().collection(columnCollectionName).findOneAndUpdate(
