@@ -83,8 +83,25 @@ const getFullBoard = async (boardId) => {
   }
 }
 
+const update = async (id, data) => {
+  try {
+    //Ghi đè id từ string thành objectID
+    const updateData = { ...data }
+    //Await đến hàm GetDB rồi insert cái value đã validate vào
+    const result = await getDB().collection(boardCollectionName).findOneAndUpdate(
+      { _id: ObjectId(id) }, //tìm đến id của column cần update
+      { $set: updateData }, //data update từ service truyền qua
+      { returnDocument: 'after' } //trả về bản ghi đã update, true -> bản ghi chưa update
+    )
+    return result.value
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const BoardModel = {
   createNew,
   pushColumnOrder,
-  getFullBoard
+  getFullBoard,
+  update
 }
