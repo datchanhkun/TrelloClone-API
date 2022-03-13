@@ -3,6 +3,7 @@ import { HttpStatusCode } from '*/utilities/constants'
 import { boardRoutes } from './board.route'
 import { columnRoutes } from './column.route'
 import { cardRoutes } from './card.route'
+import { userRoutes } from './user.route'
 const router = express.Router()
 
 //GET v1/status
@@ -13,5 +14,7 @@ router.use('/boards', boardRoutes)
 router.use('/columns', columnRoutes)
 /* Column APIs */
 router.use('/cards', cardRoutes)
+/* Auth User APIs */
+router.use('/auth', userRoutes)
 
 export const apiV1 = router
